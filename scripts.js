@@ -1,8 +1,9 @@
 //Definir classe contaBancaria
 
-class contaBancaria {
+class ContaBancaria {
     //Propriedades
     #saldo;
+
     constructor(){
         this.#saldo = 0;
     }
@@ -15,7 +16,7 @@ class contaBancaria {
     }
 
     sacar(valor){
-        if(this.temSaldoParaSacar(valor)) {
+        if(this.temSaldoParaSacar(valor) && valor > 0) { // Validação extra para valores negativos
             this.#saldo -= valor;
             return true;
         }
@@ -46,20 +47,46 @@ class CaixaEletronico { // Nome da classe em PascalCase para evitar conflito
                 return;
                 }
 
-        // Fazer o depósito na conta
-        this.conta.depositar(valorDeposito);
-        // Exibir saldo atualizado
-        this.mostrarSaldo(this.conta.saldo);
-
+        this.conta.depositar(valorDeposito); // Fazer o depósito na conta
+        this.mostrarSaldo(this.conta.saldo); // Exibir saldo atualizado
+        this.limparInputs();
     }
 
-    mostrarSaldo(saldo){
-        document.getElementById("saldo").textContent = `Saldo: R$ ${saldo.toFixed(2)}`;
+    sacar() {
+        //Pegar o valor do saque
+        const valorSaque = parseFloat(document.getElementById("valorSaque").value)
+
+        if (isNaN(valorSaque) || valorSaque <= 0) {
+            alert("Por favor, insira um valor de saque válido.");
+            return;
+        }
+
+        // Executa o saque e verifica se deu certo
+        const saqueSucesso = this.conta.sacar(valorSaque);
+        
+        if (saqueSucesso) {
+            this.mostrarSaldo();
+        } else {
+            alert("Saldo insuficiente para realizar o saque.");
+        }
+        
+        this.limparInputs();
     }
 
+    // Exibe o saldo pegando direto da conta atrelada
+    mostrarSaldo(){
+        const saldoAtual = this.conta.saldo;
+        document.getElementById("saldo").textContent = `Saldo: R$ ${saldoAtual.toFixed(2)}`;
+    }
+
+    // Função utilitária para limpar os campos
+    limparInputs() {
+        document.getElementById("valorDeposito").value = '';
+        document.getElementById("valorSaque").value = '';
+    }
 }
 
 // Criar instâncias
- const minhaConta = new contaBancaria();
- const caixa = new CaixaEletronico(minhaConta); // Passa a instância correta
+ const minhaConta = new ContaBancaria();
+ const caixa = new CaixaEletronico(minhaConta);
 
